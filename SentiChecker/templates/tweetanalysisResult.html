@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>SentiChecker Results</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="static/img/favicon.png" rel="icon">
+  <link href="static/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="static/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="static/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="static/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="static/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="static/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="static/vendor/simple-datatables/style.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="static/css/style.css" rel="stylesheet">
+
+  <style>
+    #chartdiv {
+      width: 90%;
+      height: 600px;
+      background-color: white;
+    }
+    #chartdiv11 {
+      width: 90%;
+      height: 600px;
+      background-color: white;
+    }
+    .highlighter{
+      font-weight: 900;
+    }
+  </style>  
+
+</head>
+
+<body>
+
+ 
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center">
+
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="/" class="logo d-flex align-items-center">
+        <img src="static/img/logo.png" alt="">
+        <span class="d-none d-lg-block">SentiChecker</span>
+      </a>
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+    </div><!-- End Logo -->
+
+  </header><!-- End Header -->
+
+  <!-- ======= Sidebar ======= -->
+  <aside id="sidebar" class="sidebar">
+
+    <ul class="sidebar-nav" id="sidebar-nav">
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="/">
+          <i class="bi bi-grid"></i>
+          <span>Dashboard</span>
+        </a>
+      </li><!-- End Dashboard Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="/tweet">
+          <i class="bi bi-circle"></i>
+          <span>Tweet Analysis</span>
+        </a>
+      </li><!-- End Tweet Analysis Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          <i class="bi bi-square"></i>
+          <span>Analysis Results</span>
+        </a>
+      </li><!-- End Analysis Results Nav -->
+
+  </aside><!-- End Sidebar-->
+
+
+  <main id="main" class="main">
+
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Analysis Results for Keyword : {{keyword}}</h5>
+              <p>Here is detailed report on the percentage of people who have positive, negative and neutral opinion.</p>
+              
+              <h5 class="card-title">Polarity Percentage</h5>
+
+              <div id="chartdiv11" style="padding-bottom:40px; margin-bottom: 40px;">
+              </div> 
+
+              <h5 class="card-title">Parameter graph</h5>
+
+              <div id="chartdiv" style="padding-bottom:40px;margin-bottom: 40px;">
+              </div>
+
+              <h5 class="card-title">Tweet Analysis</h5>
+
+              <!-- Table Variants -->
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">S No</th>
+                    <th scope="col">Polarity</th>
+                    <th scope="col">Subjectivity</th>
+                    <th scope="col">Emotion Score</th>
+                    <th scope="col">Emotion</th>
+                    <th scope="col">Tweet</th>
+                    <th scope="col" max-width="200px">User Name</th>
+                    <th scope="col">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                  {% if emotion=='all' %}
+                    {% for r in result['result'] %}
+
+                      {% if r["compound_score_sentiment"] =='Positive' %}
+                      <tr class="table-success">
+                      {% elif r["compound_score_sentiment"] =='Negative' %} 
+                      <tr class="table-danger">
+                      {% else %}   
+                      <tr class="table-warning">
+                      {% endif %}
+                        <td>{{ loop.index }}</td>
+                        <td>{{ r["sentiment"]["polarity"] }}</td>
+                        <td>{{ r["sentiment"]["subjectivity"] }}</td>
+                        <td>{{ r["compound_score"] }}</td>
+                        <td>{{ r["compound_score_sentiment"] }}</td>
+                        <td>{{ r["full_text"]|safe }}</td>
+                        <td>{{ r["user_name"] }}</td>
+                        <td>{{ r["created_at"] }}</td>
+                    </tr>
+
+                    {% endfor %}
+                    {% endif %}
+
+                    {% if emotion=='neg' %}
+                    {% for r in result['result'] %}
+                    {% if r["compound_score_sentiment"]=='Negative' %}
+
+                    <tr class="table-danger">
+                        <td>{{ loop.index }}</td>
+                        <td>{{ r["sentiment"]["polarity"] }}</td>
+                        <td>{{ r["sentiment"]["subjectivity"] }}</td>
+                        <td>{{ r["compound_score"] }}</td>
+                        <td>{{ r["compound_score_sentiment"] }}</td>
+                        <td>{{ r["full_text"]|safe }}</td>
+                        <td>{{ r["user_name"] }}</td>
+                        <td>{{ r["created_at"] }}</td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                    {% endif %}
+
+                    {% if emotion=='neu' %}
+                    {% for r in result['result'] %}
+                    {% if r["compound_score_sentiment"]=='Neutral' %}
+
+                    <tr class="table-warning">
+                        <td>{{ loop.index }}</td>
+                        <td>{{ r["sentiment"]["polarity"] }}</td>
+                        <td>{{ r["sentiment"]["subjectivity"] }}</td>
+                        <td>{{ r["compound_score"] }}</td>
+                        <td>{{ r["compound_score_sentiment"] }}</td>
+                        <td>{{ r["full_text"]|safe }}</td>
+                        <td>{{ r["user_name"] }}</td>
+                        <td>{{ r["created_at"] }}</td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                    {% endif %}
+
+                    {% if emotion=='pos' %}
+                    {% for r in result['result'] %}
+                    {% if r["compound_score_sentiment"]=='Positive' %}
+
+                    <tr class="table-success">
+                        <td>{{ loop.index }}</td>
+                        <td>{{ r["sentiment"]["polarity"] }}</td>
+                        <td>{{ r["sentiment"]["subjectivity"] }}</td>
+                        <td>{{ r["compound_score"] }}</td>
+                        <td>{{ r["compound_score_sentiment"] }}</td>
+                        <td>{{ r["full_text"]|safe }}</td>
+                        <td>{{ r["user_name"] }}</td>
+                        <td>{{ r["created_at"] }}</td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                    {% endif %}
+
+                </tbody>
+              </table>
+              <!-- End Table Variants -->
+
+            </div>
+          </div>
+
+      
+  </main><!-- End #main -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="static/vendor/apexcharts/apexcharts.min.js"></script>
+  <script src="static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="static/vendor/chart.js/chart.min.js"></script>
+  <script src="static/vendor/echarts/echarts.min.js"></script>
+  <script src="static/vendor/quill/quill.min.js"></script>
+  <script src="static/vendor/simple-datatables/simple-datatables.js"></script>
+  <script src="static/vendor/tinymce/tinymce.min.js"></script>
+  <script src="static/vendor/php-email-form/validate.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="static/js/main.js"></script>
+
+  
+    <!-- Resources -->
+    <script src="https://cdn.amcharts.com/lib/5/percent.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+    
+    <!-- Chart code -->
+    <script>
+      am5.ready(function() {
+      
+      // Create root element
+      // https://www.amcharts.com/docs/v5/getting-started/#Root_element
+      var root = am5.Root.new("chartdiv");
+  
+      var colorSet = am5.ColorSet.new(root, {});
+      
+      // Set themes
+      // https://www.amcharts.com/docs/v5/concepts/themes/
+      root.setThemes([am5themes_Animated.new(root)]);
+      
+      // Create chart
+      // https://www.amcharts.com/docs/v5/charts/xy-chart/
+      var chart = root.container.children.push(
+        am5xy.XYChart.new(root, {
+          layout: root.verticalLayout
+        })
+      );
+      
+      // Add scrollbar
+      // https://www.amcharts.com/docs/v5/charts/xy-chart/scrollbars/
+      chart.set(
+        "scrollbarX",
+        am5.Scrollbar.new(root, {
+          orientation: "horizontal"
+        })
+      );
+      
+      var data = [
+      {% for r in result['result'] %}
+        {
+          no: "{{ loop.index }}",
+          emotions: "{{ r["compound_score_sentiment"] }}",
+          emotion_score: {{ r["compound_score"] }},
+          polarity: {{ r["sentiment"]["polarity"] }},
+          subjectivity: {{ r["sentiment"]["subjectivity"] }},
+          strokeSettings1: {
+        stroke: colorSet.getIndex(6),
+      },
+      strokeSettings2: {
+        stroke: colorSet.getIndex(3),
+      }
+        },
+        {% endfor %}
+      ];
+      
+      // Create axes
+      // https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
+      var xAxis = chart.xAxes.push(
+        am5xy.CategoryAxis.new(root, {
+          categoryField: "no",
+          renderer: am5xy.AxisRendererX.new(root, {}),
+          tooltip: am5.Tooltip.new(root, {})
+        })
+      );
+      
+      xAxis.data.setAll(data);
+      
+      var yAxis = chart.yAxes.push(
+        am5xy.ValueAxis.new(root, {
+          min: -1,
+          max: 1,
+          renderer: am5xy.AxisRendererY.new(root, {})
+        })
+      );
+      
+      
+      // Add series
+      // https://www.amcharts.com/docs/v5/charts/xy-chart/series/
+      
+      var series1 = chart.series.push(
+        am5xy.ColumnSeries.new(root, {
+          name: "Sentiment",
+          xAxis: xAxis,
+          yAxis: yAxis,
+          valueYField: "emotion_score",
+          categoryXField: "no",
+          tooltip:am5.Tooltip.new(root, {
+            pointerOrientation:"horizontal",
+            labelText:"{name} in {categoryX}: {valueY} {info}"
+          })
+        })
+      );
+      
+      series1.columns.template.setAll({
+        tooltipY: am5.percent(10),
+        templateField: "columnSettings"
+      });
+  
+      series1.bullets.push(function() {
+      return am5.Bullet.new(root, {
+        locationX: 0.5,
+        locationY: 0.5,
+        sprite: am5.Label.new(root, {
+          centerY: am5.p50,
+          centerX: am5.p50,
+          // text: "{emotions}",
+          populateText: true
+        })
+      });
+    });
+      
+      series1.data.setAll(data);
+      
+      var series2 = chart.series.push(
+        am5xy.LineSeries.new(root, {
+          name: "Contradiction",
+          xAxis: xAxis,
+          yAxis: yAxis,
+          valueYField: "polarity",
+          categoryXField: "no",
+          tooltip:am5.Tooltip.new(root, {
+            pointerOrientation:"horizontal",
+            labelText:"{name} in {categoryX}: {valueY} {info}"
+          })    
+        })
+      );
+      
+      series2.strokes.template.setAll({
+        strokeWidth: 3,
+        templateField: "strokeSettings1"
+      });
+      
+      series2.data.setAll(data);
+      
+      series2.bullets.push(function () {
+        return am5.Bullet.new(root, {
+          sprite: am5.Circle.new(root, {
+            strokeWidth: 3,
+            stroke: series2.get("stroke"),
+            radius: 5,
+            fill: root.interfaceColors.get("background")
+          })
+        });
+      });
+  
+      var series3 = chart.series.push(
+        am5xy.LineSeries.new(root, {
+          name: "Opinion Impact",
+          xAxis: xAxis,
+          yAxis: yAxis,
+          valueYField: "subjectivity",
+          categoryXField: "no",
+          tooltip:am5.Tooltip.new(root, {
+            pointerOrientation:"horizontal",
+            labelText:"{name} in {categoryX}: {valueY} {info}"
+          })    
+        })
+      );
+      
+      series3.strokes.template.setAll({
+        strokeWidth: 3,
+        templateField: "strokeSettings2"
+      });
+      
+      
+      series3.data.setAll(data);
+      
+      series3.bullets.push(function () {
+        return am5.Bullet.new(root, {
+          sprite: am5.Circle.new(root, {
+            strokeWidth: 3,
+            stroke: series2.get("stroke"),
+            radius: 5,
+            fill: root.interfaceColors.get("background")
+          })
+        });
+      });
+  
+      
+      chart.set("cursor", am5xy.XYCursor.new(root, {}));
+      
+      // Add legend
+      // https://www.amcharts.com/docs/v5/charts/xy-chart/legend-xy-series/
+      var legend = chart.children.push(
+        am5.Legend.new(root, {
+          centerX: am5.p50,
+          x: am5.p50
+        })
+      );
+      legend.data.setAll(chart.series.values);
+   
+      // Make stuff animate on load
+      // https://www.amcharts.com/docs/v5/concepts/animations/
+      chart.appear(1000, 100);
+      series1.appear();
+  
+      var root11 = am5.Root.new("chartdiv11");
+          root11.setThemes([
+          am5themes_Animated.new(root11)
+          ]);
+          var chart11 = root11.container.children.push(am5percent.PieChart.new(root11, {
+          layout: root11.verticalLayout
+          }));
+          var series11 = chart11.series.push(am5percent.PieSeries.new(root11, {
+          valueField: "value",
+          categoryField: "category"
+          }));
+          series11.data.setAll([
+          { value: {{ result['nof']['neg'] }}, category: "Negative" },
+          { value: {{ result['nof']['neu'] }}, category: "Neutral" },
+          { value: {{ result['nof']['pos'] }}, category: "Positive" },
+          ]);
+          series11.appear(1000, 100);
+      
+      }); // end am5.ready()
+      </script>
+
+</body>
+
+</html>
